@@ -26,77 +26,63 @@ uint32_t write_text_to_frame_buffer(char *frame_buffer, int x, int y, const char
 
 void draw_line(char *frame_buffer, char ch, uint32_t x_start, uint32_t y_start, uint32_t x_end, uint32_t y_end)
 {
-    int dx     = x_end - x_start;
-    int dy     = y_end - y_start;
-    int step_x = (dx < 0) ? -1 : 1;
-    int step_y = (dy < 0) ? -1 : 1;
+    // uint32_t x = 0;
+    // for (int y = 0; y < 5; y++) {
+    //     screen[y * FRAME_WIDTH + x] = '*';
+    // }
 
-    dx = step_x * dx;
-    dy = step_y * dy;
+    // calculate dy/dx
+    // uint32_t dy    = labs(y_end - y_start);
+    // uint32_t dx    = labs(x_end - x_start);
+    // uint32_t dy_dx = dy / dx;
+}
 
-    int x = x_start;
-    int y = y_start;
 
-    // Calculate the index in the frame buffer corresponding to the starting coordinates
-    int index           = y * FRAME_WIDTH + x;
-    frame_buffer[index] = ch;  // Set the starting point
 
-    if (dx > dy) {
-        int error = dx / 2;
-        while (x != x_end) {
-            x += step_x;
-            error -= dy;
-            if (error < 0) {
-                y += step_y;
-                error += dx;
-            }
-            index               = y * FRAME_WIDTH + x;
-            frame_buffer[index] = ch;
-        }
-    }
-    else {
-        int error = dy / 2;
-        while (y != y_end) {
-            y += step_y;
-            error -= dx;
-            if (error < 0) {
-                x += step_x;
-                error += dy;
-            }
-            index               = y * FRAME_WIDTH + x;
-            frame_buffer[index] = ch;
-        }
-    }
+void set_console_size(int width, int height)
+{
+    HANDLE     std_handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    SMALL_RECT rect       = { 0, 0, width - 1, height - 1 };
+
+    SetConsoleWindowInfo(std_handle, TRUE, &rect);
+}
+
+void set_console_title(const char *title)
+{
+    SetConsoleTitleA(title);
+}
+
+void write_console_output(const char *char_buffer, int width, int height)
+{
+    HANDLE std_handle  = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD  coord       = { width, height };
+    COORD  start_coord = { 0, 0 };
+    DWORD  chars_written;
+
+    WriteConsoleOutputCharacterA(std_handle, char_buffer, width * height, start_coord, &chars_written);
 }
 
 int main()
 {
 
+    // Create the console window
+    set_console_size(FRAME_WIDTH, FRAME_HEIGHT);
+    set_console_title("Character Framebuffer Example");
 
-    HANDLE hConsole =
-        CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
-    SetConsoleActiveScreenBuffer(hConsole);
-    DWORD dwBytesWritten = 0;
+    // Example character framebuffer (replace with your own data)
+    char framebuffer[FRAME_WIDTH * FRAME_HEIGHT];
+    memset(framebuffer, ' ', FRAME_WIDTH * FRAME_HEIGHT);
 
-    COORD coord = { .X = 0, .Y = 0 };
+    // Display the character framebuffer
 
-    uint32_t ticks = 0;
-
-    while (1) {
-
-        ticks += 100;
-
-        if (ticks >= 2000) {
-            ticks = 0;
-        }
-        // write_text_to_frame_buffer(&screen, 0, 0, "Current tick ms %d ", ticks);
-        draw_line(screen, '*', 10, 5, 20, 15);
-        WriteConsoleOutputCharacter(hConsole, screen, FRAME_WIDTH * FRAME_HEIGHT, coord, &dwBytesWritten);
-
-
-        Sleep(1000);
+    for (int y = 0; y < 20; y++) {
+        framebuffer[y * FRAME_WIDTH + 0] = '*';
     }
 
+    write_console_output(framebuffer, FRAME_WIDTH, FRAME_HEIGHT);
 
+
+
+    getch();
     return 0;
 }
