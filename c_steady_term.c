@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-uint32_t c_steady_term_write_text(char *frame_buffer, int x, int y, const char *format, ...)
+int c_steady_term_write_text(char *frame_buffer, int x, int y, const char *format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -64,7 +64,7 @@ void c_steady_term_draw_line(char *frame_buffer, char ch, int x_start, int x_end
             for (int x = x_start; x > x_end; x--) {
                 for (int y = (x_start - x) * derivative + y_offset;
                      y < ((x_start - x) * derivative) + derivative + y_offset; y++) {
-                    frame_buffer[y * FRAME_WIDTH + x] = '*';
+                    frame_buffer[y * FRAME_WIDTH + x] = ch;
                 }
             }
         }
