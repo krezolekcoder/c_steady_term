@@ -45,44 +45,41 @@ uint32_t write_text_to_frame_buffer(char *frame_buffer, int x, int y, const char
     return written;
 }
 
-#define SWAP_UINT32(a, b) ((a) ^= (b), (b) ^= (a), (a) ^= (b))
-
 void draw_line(char *frame_buffer, char ch, int x_start, int x_end, int y_start, int y_end)
 {
     int dy = y_end - y_start;
     int dx = x_end - x_start;
 
-    int derivative = 0;
+    // SWAP VARIABLES
+    if (dx < 0 && dy < 0) {
+        int tmp = x_start;
+        x_start = x_end;
+        x_end   = tmp;
+
+        tmp     = y_start;
+        y_start = y_end;
+        y_end   = tmp;
+    }
+    else if (dx > 0 && dy < 0) {
+        int tmp = x_start;
+        x_start = x_end;
+        x_end   = tmp;
+    }
 
     if (dy != 0 && dx != 0) {
-        if (labs(dy) >= labs(dx)) {
-            derivative = dy / dx;
+        int derivative = labs(dy / dx);
 
-            if (dx > 0) {
-                for (int x = x_start; x < x_end; x++) {
-                    for (int y = x * derivative; y < x * derivative + derivative; y++) {
-                        frame_buffer[y * FRAME_WIDTH + x] = ch;
-                    }
-                }
-            }
-            else {
-
-                for (int x = x_start; x > x_end; x--) {
-                    for (int y = (x_start - x) * labs(derivative);
-                         y < ((x_start - x) * labs(derivative)) + labs(derivative); y++) {
-                        frame_buffer[y * FRAME_WIDTH + x] = '*';
-                    }
+        if (dx * dy > 0) {
+            for (int x = x_start; x < x_end; x++) {
+                for (int y = x * derivative; y < x * derivative + derivative; y++) {
+                    frame_buffer[y * FRAME_WIDTH + x] = ch;
                 }
             }
         }
         else {
-            derivative = dx / dy;
-
-            if (dx > 0) {
-                for (int y = y_start; y < y_end; y++) {
-                    for (int x = y * derivative; x < y * derivative + derivative; x++) {
-                        frame_buffer[y * FRAME_WIDTH + x] = ch;
-                    }
+            for (int x = x_start; x > x_end; x--) {
+                for (int y = (x_start - x) * derivative; y < ((x_start - x) * derivative) + derivative; y++) {
+                    frame_buffer[y * FRAME_WIDTH + x] = '*';
                 }
             }
         }
@@ -111,11 +108,11 @@ void draw_line(char *frame_buffer, char ch, int x_start, int x_end, int y_start,
 int main()
 {
 
-    // Create the console window
+    // // Create the console window
     set_console_size(FRAME_WIDTH, FRAME_HEIGHT);
     set_console_title("Character Framebuffer Example");
 
-    // Example character framebuffer (replace with your own data)
+    // // Example character framebuffer (replace with your own data)
     char framebuffer[FRAME_WIDTH * FRAME_HEIGHT];
     memset(framebuffer, ' ', FRAME_WIDTH * FRAME_HEIGHT);
 
@@ -124,7 +121,9 @@ int main()
     draw_line(framebuffer, '*', 0, 10, 0, 10);
     draw_line(framebuffer, '*', 10, 0, 0, 10);
 
-    // draw_line(framebuffer, '*', 0, 10, 5, 5);
+    // draw_line(framebuffer, '*', 20, 10, 20, 10);
+    draw_line(framebuffer, '*', 10, 20, 20, 10);
+
 
     write_console_output(framebuffer, FRAME_WIDTH, FRAME_HEIGHT);
 
