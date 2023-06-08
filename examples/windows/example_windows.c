@@ -18,12 +18,18 @@ int main()
     char framebuffer[FRAME_WIDTH * FRAME_HEIGHT];
     memset(framebuffer, ' ', FRAME_WIDTH * FRAME_HEIGHT);
 
-    c_steady_term_draw_line(framebuffer, 'A', 0, 10, 0, 0);
-    c_steady_term_draw_line(framebuffer, '*', 0, 10, 9, 9);
-    c_steady_term_draw_line(framebuffer, '*', 0, 0, 0, 10);
-    c_steady_term_draw_line(framebuffer, '*', 9, 9, 0, 10);
-    c_steady_term_draw_line(framebuffer, '*', 20, 10, 20, 10);
-    c_steady_term_draw_line(framebuffer, '*', 10, 20, 20, 10);
+    // c_steady_term_draw_line(framebuffer, 'A', 0, 10, 0, 0);
+    // c_steady_term_draw_line(framebuffer, '*', 0, 10, 9, 9);
+    // c_steady_term_draw_line(framebuffer, '*', 0, 0, 0, 10);
+    // c_steady_term_draw_line(framebuffer, '*', 9, 9, 0, 10);
+    // c_steady_term_draw_line(framebuffer, '*', 20, 10, 20, 10);
+    // c_steady_term_draw_line(framebuffer, '*', 10, 20, 20, 10);
+
+    // c_steady_term_draw_rect(framebuffer, '*', 0, 0, 10, 10);
+    // TODO - nie dziala
+    // c_steady_term_draw_triangle(framebuffer, 'A', 1, 1, 10, 3, 5, 20);
+
+
 
     c_steady_term_write_text(framebuffer, 20, 20, "HELLO WORLD %d %d ", 10, 20);
 

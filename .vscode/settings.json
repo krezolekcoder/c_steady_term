@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "platform_port_windowsc": "c",
+        "platform_port.h": "c"
+    }
+}

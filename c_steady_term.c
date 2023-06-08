@@ -87,3 +87,24 @@ void c_steady_term_draw_line(char *frame_buffer, char ch, int x_start, int x_end
         }
     }
 }
+
+void c_steady_term_draw_rect(char *frame_buffer, char ch, int x_start, int y_start, int x_width, int y_width)
+{
+    c_steady_term_draw_line(frame_buffer, ch, x_start, x_start + x_width, y_start, y_start);
+    c_steady_term_draw_line(frame_buffer, ch, x_start, x_start + x_width, y_start + y_width - 1,
+                            y_start + y_width - 1);
+    c_steady_term_draw_line(frame_buffer, ch, x_start, x_start, y_start, y_start + y_width);
+    c_steady_term_draw_line(frame_buffer, ch, x_start + x_width, x_start + x_width, y_start, y_start + y_width);
+}
+
+void c_steady_term_draw_triangle(char *frame_buffer, char ch, int x1, int y1, int x2, int y2, int x3, int y3)
+{
+    c_steady_term_draw_line(frame_buffer, ch, x1, x2, y1, y2);
+    c_steady_term_draw_line(frame_buffer, ch, x1, x3, y1, y3);
+    c_steady_term_draw_line(frame_buffer, ch, x2, x3, y2, y3);
+}
+
+
+void c_steady_term_draw_circle(char *frame_buffer, char ch, int x_center, int y_center, int radius)
+{
+}
