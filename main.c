@@ -77,8 +77,11 @@ void draw_line(char *frame_buffer, char ch, int x_start, int x_end, int y_start,
             }
         }
         else {
+            int y_offset = y_end < y_start ? y_end : y_start;
+
             for (int x = x_start; x > x_end; x--) {
-                for (int y = (x_start - x) * derivative; y < ((x_start - x) * derivative) + derivative; y++) {
+                for (int y = (x_start - x) * derivative + y_offset;
+                     y < ((x_start - x) * derivative) + derivative + y_offset; y++) {
                     frame_buffer[y * FRAME_WIDTH + x] = '*';
                 }
             }
@@ -121,7 +124,7 @@ int main()
     draw_line(framebuffer, '*', 0, 10, 0, 10);
     draw_line(framebuffer, '*', 10, 0, 0, 10);
 
-    // draw_line(framebuffer, '*', 20, 10, 20, 10);
+    draw_line(framebuffer, '*', 20, 10, 20, 10);
     draw_line(framebuffer, '*', 10, 20, 20, 10);
 
 
