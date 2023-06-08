@@ -45,33 +45,63 @@ uint32_t write_text_to_frame_buffer(char *frame_buffer, int x, int y, const char
     return written;
 }
 
+#define SWAP_UINT32(a, b) ((a) ^= (b), (b) ^= (a), (a) ^= (b))
 
-void draw_line(char *frame_buffer, char ch, uint32_t x_start, uint32_t x_end, uint32_t y_start, uint32_t y_end)
+void draw_line(char *frame_buffer, char ch, int x_start, int x_end, int y_start, int y_end)
 {
+    int dy = y_end - y_start;
+    int dx = x_end - x_start;
 
-    // calculate dy/dx
+    int derivative = 0;
 
-    uint32_t dy = labs(y_end - y_start);
-    uint32_t dx = labs(x_end - x_start);
+    if (dy != 0 && dx != 0) {
+        if (labs(dy) >= labs(dx)) {
+            derivative = dy / dx;
 
-    uint32_t derivative = 0;
+            if (dx > 0) {
+                for (int x = x_start; x < x_end; x++) {
+                    for (int y = x * derivative; y < x * derivative + derivative; y++) {
+                        frame_buffer[y * FRAME_WIDTH + x] = ch;
+                    }
+                }
+            }
+            else {
 
-    if (dy > dx) {
-        derivative = dy / dx;
+                for (int x = x_start; x > x_end; x--) {
+                    for (int y = (x_start - x) * labs(derivative);
+                         y < ((x_start - x) * labs(derivative)) + labs(derivative); y++) {
+                        frame_buffer[y * FRAME_WIDTH + x] = '*';
+                    }
+                }
+            }
+        }
+        else {
+            derivative = dx / dy;
 
-        for (int x = x_start; x < x_end; x++) {
-            for (int y = x * derivative; y < x * derivative + derivative; y++) {
-                frame_buffer[y * FRAME_WIDTH + x] = ch;
+            if (dx > 0) {
+                for (int y = y_start; y < y_end; y++) {
+                    for (int x = y * derivative; x < y * derivative + derivative; x++) {
+                        frame_buffer[y * FRAME_WIDTH + x] = ch;
+                    }
+                }
             }
         }
     }
     else {
-        derivative = dx / dy;
+        if (dy == 0 && dx != 0) {
 
-        for (int y = y_start; y < y_end; y++) {
-            for (int x = y * derivative; x < y * derivative + derivative; x++) {
-                frame_buffer[y * FRAME_WIDTH + x] = ch;
+            for (int x = x_start; x < x_end; x++) {
+                frame_buffer[y_start * FRAME_WIDTH + x] = ch;
             }
+        }
+        else if (dx == 0 && dy != 0) {
+
+            for (int y = y_start; y < y_end; y++) {
+                frame_buffer[y * FRAME_WIDTH + x_start] = ch;
+            }
+        }
+        else {
+            ;
         }
     }
 }
@@ -91,7 +121,10 @@ int main()
 
     // Display the character framebuffer
 
-    draw_line(framebuffer, '*', 0, 0, 0, 10);
+    draw_line(framebuffer, '*', 0, 10, 0, 10);
+    draw_line(framebuffer, '*', 10, 0, 0, 10);
+
+    // draw_line(framebuffer, '*', 0, 10, 5, 5);
 
     write_console_output(framebuffer, FRAME_WIDTH, FRAME_HEIGHT);
 
